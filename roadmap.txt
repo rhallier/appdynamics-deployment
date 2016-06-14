@@ -1,0 +1,3 @@
+- SSL support without cert validation
+- license report
+- warning/error report (events parsing + All Other Traffic + jmvs incompatibility...)

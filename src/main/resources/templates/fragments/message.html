@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="message (type, message)" class="alert" th:classappend="'alert-' + ${type}">
+        <span th:text="${message}">Message</span>
+    </div>
+
+    <div th:fragment="messageDismissable (type, message)" class="alert alert-dismissable" th:classappend="'alert-' + ${type}">
+        <button type="button" class="close" data-dismiss="alert" >&times;</button>
+        <span th:text="${message}">Message</span>
+    </div>
+    
+</body>
+</html>
+
