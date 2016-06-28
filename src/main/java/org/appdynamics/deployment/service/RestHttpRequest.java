@@ -76,7 +76,10 @@ public class RestHttpRequest  {
 	public <T> T asXml(Class<T> clazz) throws UnirestException {
 		HttpResponse<String> arep = request.asString();
 		String a = arep.getBody();
-	
+
+		if(arep.getStatus()!=200)
+			throw new UnirestException(a);
+		
 		T result=null;
 		try {
 			result = xmlMapper.readValue(a, clazz);

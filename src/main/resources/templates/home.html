@@ -160,8 +160,13 @@
 							<p th:if="${#fields.hasErrors('timerangeMinsBeforeNow')}" th:errors="*{timerangeMinsBeforeNow}">Error</p>
 						</div>
 						<div class="col-md-3 form-group">
-							<label><span th:text="#{building.applicationFilter}"></span></label> 
+							<label><span th:text="#{building.applicationFilter}"></span></label>
 							<input type="text" th:field="*{applicationFilter}" th:errorclass="fieldError" class="form-control" />
+							 <div class="checkbox">
+	    						<label>
+									<input type="checkbox" th:field="*{notFilter}"/> Not
+	    						</label>
+	  						</div>
 						</div>
 					</div>
 				</div>

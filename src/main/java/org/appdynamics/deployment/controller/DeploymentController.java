@@ -70,7 +70,12 @@ public class DeploymentController {
 	public String buildGraph(@Valid ControllerForm controllerForm, final BindingResult bindingResult, final Model model) {
 		
 		Timerange timerange = Timerange.beforeNow(controllerForm.timerangeMinsBeforeNow);
-		ModelFilter filter = new ModelFilter().application(controllerForm.applicationFilter);
+		ModelFilter filter = new ModelFilter();
+		
+		if(controllerForm.notFilter)
+			filter.excludeApplication(controllerForm.applicationFilter);
+		else
+			filter.includeApplication(controllerForm.applicationFilter);
 		
 		if (!bindingResult.hasErrors()) {
 			try {
@@ -102,6 +107,7 @@ public class DeploymentController {
 		@NotBlank
 		private String password;
 
+		private boolean notFilter;
 		private String applicationFilter;
 		@Min(1)
 		private int timerangeMinsBeforeNow;
@@ -144,6 +150,14 @@ public class DeploymentController {
 
 		public void setApplicationFilter(String applicationFilter) {
 			this.applicationFilter = applicationFilter;
+		}
+
+		public boolean isNotFilter() {
+			return notFilter;
+		}
+
+		public void setNotFilter(boolean notFilter) {
+			this.notFilter = notFilter;
 		}
 
 		public int getTimerangeMinsBeforeNow() {

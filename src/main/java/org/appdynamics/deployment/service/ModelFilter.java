@@ -6,35 +6,55 @@ import java.util.List;
 import org.appdynamics.deployment.utils.StringUtils;
 
 public class ModelFilter {
-	private List<String> applications = new ArrayList<String>();
+	private List<String> includeApplications = new ArrayList<String>();
+	private List<String> excludeApplications = new ArrayList<String>();
 
 	public ModelFilter() {
 	}
 
-	public ModelFilter application(String application) {
+	public ModelFilter includeApplication(String application) {
 		if(StringUtils.isNotBlank(application))
-			applications.add(application);
+			includeApplications.add(application);
 		return this;
 	}
-	
-	public List<String> getApplications() {
-		return applications;
+
+	public ModelFilter excludeApplication(String application) {
+		if(StringUtils.isNotBlank(application))
+			excludeApplications.add(application);
+		return this;
 	}
 
-	public void setApplications(List<String> applications) {
-		this.applications = applications;
+	public List<String> getIncludeApplications() {
+		return includeApplications;
+	}
+
+	public void setIncludeApplications(List<String> applications) {
+		this.includeApplications = applications;
 	}
 	
 	public boolean acceptApplication(String applicationName) {
 		boolean result = true;
 		
-		if(applications!=null && !applications.isEmpty()) {
-			result = false;
-
-			for(String app : applications) {
-				if(applicationName.toLowerCase().contains(app.toLowerCase())) {
-					result =true;
+		// Exclude
+		if(excludeApplications!=null && !excludeApplications.isEmpty()) {
+			for(String app : excludeApplications) {
+				if( applicationName.toLowerCase().contains(app.toLowerCase())) {
+					result =false;
 					break;
+				}
+			}
+		}
+		
+		// Include
+		if(result) {
+			if(includeApplications!=null && !includeApplications.isEmpty()) {
+				result = false;
+	
+				for(String app : includeApplications) {
+					if( applicationName.toLowerCase().contains(app.toLowerCase())) {
+						result =true;
+						break;
+					}
 				}
 			}
 		}
