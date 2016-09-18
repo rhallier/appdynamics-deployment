@@ -147,7 +147,7 @@ public class RestService {
 			.asObject(MetricData[].class);
 		
 		MetricData[] data = mdRep.getBody();
-		if(data!=null && data.length>0)
+		if(data!=null && data.length>0 && data[0].getMetricValues()!=null && data[0].getMetricValues().size()!=0)
 			return data[0].getMetricValues().get(0).getSum();
 		else
 			return 0;
