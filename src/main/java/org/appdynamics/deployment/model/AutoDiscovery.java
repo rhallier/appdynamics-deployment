@@ -8,6 +8,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 @JacksonXmlRootElement(localName="auto-discovery")
 public class AutoDiscovery {
 
+
     private String name;
     private String properties;
     @JacksonXmlProperty(localName="discovery-resolution")
@@ -62,7 +63,7 @@ public class AutoDiscovery {
 
 		// properties
 		if(StringUtils.isInList(name, "WEB", "PHP_WEB", "SERVLET", "RUBY_WEB", "NATIVE", "ASP_DOTNET","PYTHON_WEB", "NODEJS_WEB")) {
-			if(!properties.equalsIgnoreCase("uri-length;first-n-segments;segment-length;2;"))
+			if(properties!=null && !properties.equalsIgnoreCase("uri-length;first-n-segments;segment-length;2;"))
 				return true;
 		}
 		

@@ -21,6 +21,7 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.ObjectMapper;
 import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.mashape.unirest.http.utils.URLParamEncoder;
 import com.mashape.unirest.request.HttpRequest;
 import com.mashape.unirest.request.body.Body;
 
@@ -78,7 +79,7 @@ public class RestHttpRequest  {
 		String a = arep.getBody();
 
 		if(arep.getStatus()!=200)
-			throw new UnirestException(a);
+			throw new UnirestException(request.getUrl() +" ====> "+ a);
 		
 		T result=null;
 		try {

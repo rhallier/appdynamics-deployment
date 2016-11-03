@@ -3,10 +3,15 @@ package org.appdynamics.deployment.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 public class AutoDiscoveryConfig {
+	private final static Logger logger = LoggerFactory.getLogger(AutoDiscoveryConfig.class);
+
 	@JacksonXmlProperty(localName = "controller-version", isAttribute = true)
     private String controllerVersion;
     
@@ -29,6 +34,8 @@ public class AutoDiscoveryConfig {
 		
 		if(autoDiscovery!=null)
 			for(AutoDiscovery ad : autoDiscovery) {
+				if(logger.isDebugEnabled())
+					logger.debug("Evaluating if the autoDiscovery panel has changed for "+ad);
 				result=result+(ad.isChanged()?1:0);
 			}
 		

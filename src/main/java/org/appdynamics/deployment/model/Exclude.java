@@ -7,6 +7,7 @@ import org.appdynamics.deployment.model.rules.PojoRule;
 import org.appdynamics.deployment.model.rules.ServletRule;
 import org.appdynamics.deployment.model.rules.SpringRule;
 import org.appdynamics.deployment.model.rules.StrutsRule;
+import org.appdynamics.deployment.model.rules.WcfRule;
 import org.appdynamics.deployment.model.rules.WebRule;
 import org.appdynamics.deployment.model.rules.WebServiceRule;
 import org.appdynamics.deployment.utils.StringUtils;
@@ -33,6 +34,8 @@ public class Exclude {
 	private StrutsRule strutsRule;
     @JacksonXmlProperty(localName = "web-service-rule")
 	private WebServiceRule webServiceRule;
+    @JacksonXmlProperty(localName = "wcf-rule")
+	private WcfRule wcfRule;
 
 	public String getName() {
 		return name;
@@ -79,6 +82,10 @@ public class Exclude {
 		return webServiceRule;
 	}
 
+	public WcfRule getWcfRule() {
+		return wcfRule;
+	}
+
 	public boolean isDefault() {
 		return StringUtils.isInList(name, 
 				"NodeJS Static Content Filter",
@@ -118,6 +125,9 @@ public class Exclude {
 		
 		if (webRule!=null)
 			return webRule.isEnabled();
+		
+		if (wcfRule!=null)
+			return wcfRule.isEnabled();
 		
 		return false;
 	}
