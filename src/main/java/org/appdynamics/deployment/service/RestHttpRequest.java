@@ -10,24 +10,19 @@ import java.util.concurrent.Future;
 import org.appdynamics.deployment.model.Timerange;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.type.ArrayType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.mashape.unirest.http.HttpMethod;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.ObjectMapper;
 import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.mashape.unirest.http.utils.URLParamEncoder;
 import com.mashape.unirest.request.HttpRequest;
 import com.mashape.unirest.request.body.Body;
 
 public class RestHttpRequest  {
 	
-	private static com.fasterxml.jackson.databind.ObjectMapper xmlMapper = new XmlMapper();
+	public final static com.fasterxml.jackson.databind.ObjectMapper xmlMapper = new XmlObjectMapper();
 
 	public final static ObjectMapper jsonMapper = new JacksonObjectMapper();
 
