@@ -29,31 +29,7 @@ public class RestHttpRequest  {
 	
 	private static com.fasterxml.jackson.databind.ObjectMapper xmlMapper = new XmlMapper();
 
-	public final static ObjectMapper jsonMapper = new ObjectMapper() {
-		private com.fasterxml.jackson.databind.ObjectMapper jacksonObjectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
-
-		@SuppressWarnings("unchecked")
-		public <T> T readValue(String value, Class<T> valueType) {
-			try {
-				if(valueType.isArray()) {
-					final Class<T> ofArray = (Class<T>) valueType.getComponentType();
-					ArrayType at = TypeFactory.defaultInstance().constructArrayType(ofArray);
-					return jacksonObjectMapper.readValue(value, at);
-				}
-				return jacksonObjectMapper.readValue(value, valueType);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
-
-		public String writeValue(Object value) {
-			try {
-				return jacksonObjectMapper.writeValueAsString(value);
-			} catch (JsonProcessingException e) {
-				throw new RuntimeException(e);
-			}
-		}
-	};
+	public final static ObjectMapper jsonMapper = new JacksonObjectMapper();
 
 	private HttpRequest request;
 	
