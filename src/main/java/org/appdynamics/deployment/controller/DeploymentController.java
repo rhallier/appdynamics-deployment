@@ -9,20 +9,19 @@ import org.appdynamics.deployment.model.Application;
 import org.appdynamics.deployment.model.Timerange;
 import org.appdynamics.deployment.service.ModelFilter;
 import org.appdynamics.deployment.service.RestService;
-import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class DeploymentController {
@@ -43,107 +42,57 @@ public class DeploymentController {
 		return Report.values();
 	}
 	
-    @RequestMapping("/")
-    String index(Model model) {
-    	model.addAttribute("controllerForm", new ControllerForm());
-        return "home";
+    @RequestMapping(path="/deploymentStatus", method=RequestMethod.GET)
+    public String index(Model model) {
+		GraphForm graphForm = applicationContext.getBean(GraphForm.class);
+    	model.addAttribute("graphForm", graphForm);
+        return "deploymentStatus";
     }
 
-	@RequestMapping(value = "/testConnection")
-	@ResponseBody
-	public String testConnection(@RequestBody ControllerForm controllerForm) {
-		try {
-			org.appdynamics.deployment.model.Controller controller = controllerForm.toController();
-			Application[] applications = service.getApplications(controller);
-			if(applications==null)
-				logger.warn("No applications found");
-			return "{\"result\":\"ok\"}";
-		}
-		catch(Exception e) {
-			logger.error("Connection failed", e);
-			return "{\"result\":\"ko\", \"error\":\"Connection failed\"}";
-		}
-		
-	}
+    @RequestMapping(path="/deploymentStatus", method=RequestMethod.POST)
+	public String buildGraph(@Valid GraphForm graphForm, final BindingResult bindingResult, final Model model) {
 
-	@RequestMapping(value = "/buildGraph", method = RequestMethod.POST)
-	public String buildGraph(@Valid ControllerForm controllerForm, final BindingResult bindingResult, final Model model) {
+		ApplicationsHolder applicationsHolder = applicationContext.getBean(ApplicationsHolder.class);
 		
-		Timerange timerange = Timerange.beforeNow(controllerForm.timerangeMinsBeforeNow);
+		if(!applicationsHolder.isControllerSet()) {
+			MessageHelper.addError(model, messageSource.getMessage("controller.connection.notset", null, null));
+			return "deploymentStatus";
+		}
+		
+		Timerange timerange = Timerange.beforeNow(graphForm.timerangeMinsBeforeNow);
 		ModelFilter filter = new ModelFilter();
 		
-		if(controllerForm.notFilter)
-			filter.excludeApplication(controllerForm.applicationFilter);
+		if(graphForm.notFilter)
+			filter.excludeApplication(graphForm.applicationFilter);
 		else
-			filter.includeApplication(controllerForm.applicationFilter);
+			filter.includeApplication(graphForm.applicationFilter);
 		
 		if (!bindingResult.hasErrors()) {
 			try {
-				org.appdynamics.deployment.model.Controller controller = controllerForm.toController();
-				List<Application> applications = service.buildGraph(controller, filter, timerange);
+				List<Application> applications = service.buildGraph(applicationsHolder.getController(), filter, timerange);
 				
-				ApplicationsHolder applicationsHolder = applicationContext.getBean(ApplicationsHolder.class);
-				applicationsHolder.setController(controller);
 				applicationsHolder.setTimerange(timerange);
 				applicationsHolder.setApplications(applications);
 				
-				MessageHelper.addSuccess(model, messageSource.getMessage("controller.connection.success", null, null));
+				MessageHelper.addSuccess(model, messageSource.getMessage("deploymentStatus.build.success", null, null));
 			} catch (Exception e) {
 				logger.error("Connection failed", e);
-				MessageHelper.addError(model, messageSource.getMessage("controller.connection.failure", null, null));
+				MessageHelper.addError(model, messageSource.getMessage("deploymentStatus.build.failure", null, null));
 			}
 		}
 
-		return "home";
+		return "deploymentStatus";
 
 	}
 
-	public static class ControllerForm {
-		@NotBlank
-		private String url;
-		private String account;
-		@NotBlank
-		private String username;
-		@NotBlank
-		private String password;
-
+    @Component
+    @Scope(scopeName = "session")
+	public static class GraphForm {
 		private boolean notFilter;
 		private String applicationFilter;
 		@Min(1)
 		private int timerangeMinsBeforeNow;
 		
-		public String getUrl() {
-			return url;
-		}
-
-		public void setUrl(String url) {
-			this.url = url;
-		}
-
-		public String getAccount() {
-			return account;
-		}
-
-		public void setAccount(String account) {
-			this.account = account;
-		}
-
-		public String getUsername() {
-			return username;
-		}
-
-		public void setUsername(String username) {
-			this.username = username;
-		}
-
-		public String getPassword() {
-			return password;
-		}
-
-		public void setPassword(String password) {
-			this.password = password;
-		}
-
 		public String getApplicationFilter() {
 			return applicationFilter;
 		}
@@ -166,10 +115,6 @@ public class DeploymentController {
 
 		public void setTimerangeMinsBeforeNow(int timerangeMinsBeforeNow) {
 			this.timerangeMinsBeforeNow = timerangeMinsBeforeNow;
-		}
-
-		public org.appdynamics.deployment.model.Controller toController() {
-			return new org.appdynamics.deployment.model.Controller(url, account, username, password);
 		}
 	}
 

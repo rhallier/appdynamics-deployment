@@ -1,0 +1,78 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layouts/standard">
+<head>
+	<meta charset="utf-8"></meta>
+	<meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet" media="screen" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js" th:src="@{/webjars/jquery/3.2.0/jquery.min.js}"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" th:href="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+</head>
+<body>
+	<div layout:fragment="content">
+
+    <script type="text/javascript" th:inline="javascript">
+	    $( document ).ready(function() {
+	    	$('#button-build').prop( "disabled", /*[[${!@applicationsHolder.controllerSet}]]*/ true )
+	    	$('#button-report').prop( "disabled", /*[[${!@applicationsHolder.controllerSet}]]*/ true )
+	    	
+	    	$('#building-form').submit(function() {
+	    	    $('#spinning').show();
+	    	    return true;
+	    	});
+	    });
+    </script>
+
+	<form id="building-form" action="#" th:action="@{/deploymentStatus}" th:object="${graphForm}" method="post">
+		<div class="panel panel-default">
+			<div class="panel-heading" th:text="#{deploymentStatus.filter.title}"></div>
+			<div class="panel-body">
+				<div class="row">
+					<div class="col-md-2 form-group">
+						<label><span th:text="#{deploymentStatus.filter.timerange.minsBeforeNow}"></span></label> 
+						<input type="text" th:field="*{timerangeMinsBeforeNow}" th:errorclass="fieldError" class="form-control" />
+						<p class="help-block" th:text="'Minutes before now'">Minutes before now</p>
+						<p th:if="${#fields.hasErrors('timerangeMinsBeforeNow')}" th:errors="*{timerangeMinsBeforeNow}">Error</p>
+					</div>
+					<div class="col-md-3 form-group">
+						<label><span th:text="#{deploymentStatus.filter.applicationFilter}"></span></label>
+						<input type="text" th:field="*{applicationFilter}" th:errorclass="fieldError" class="form-control" />
+						 <div class="checkbox">
+		  						<label>
+								<input type="checkbox" th:field="*{notFilter}"/> Not
+		  						</label>
+								</div>
+					</div>
+				</div>
+			</div>
+			<div class="panel-footer">
+				<input class="btn btn-primary" type="submit" th:value="#{deploymentStatus.build.action.build}" id="button-build"/>
+				<img id="spinning" src="" th:src="@{/images/spinning.gif}" width="32px" height="32px" style="display:none;"/>
+			</div>
+		</div>
+	</form>
+
+	<div th:if="${@applicationsHolder.initialized}">	    	
+		<h2>Reporting</h2>
+		<p>Applications <span class="badge" th:text="${@applicationsHolder.nbApplications}"></span></p>
+		
+		<form action="#" th:action="@{/reports}" method="post">
+		    <div class="panel panel-default">
+			<div class="panel-heading"><span th:text="#{controller.title}"></span></div>
+				<div class="panel-body">
+					<div class="row">
+			    		<label><span th:text="#{deploymentStatus.report.name}"></span></label> 
+						<select name="report">
+							<option th:each="rn : ${reports}" th:value="${rn.name()}" th:text="${rn.label}">Report name</option>
+						</select>
+						<select name="format">
+							<option value="xlsx">Excel</option>
+							<option value="pdf">PDF</option>
+						</select>
+						<input class="btn btn-success btn-sm" type="submit" th:value="#{deploymentStatus.report.action}" id="button-report"/>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layouts/standard">
+<head>
+	<meta charset="utf-8"></meta>
+	<meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet" media="screen" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js" th:src="@{/webjars/jquery/3.2.0/jquery.min.js}"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" th:href="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+</head>
+<body>
+	<div layout:fragment="content">
+
+	    <script type="text/javascript">
+		    $( document ).ready(function() {
+		    	$('#controller-form').submit(function() {
+		    	    $('#spinning').show();
+		    	    return true;
+		    	});
+		    });
+	    </script>
+
+		<form id="controller-form" action="#" th:action="@{/controller}" th:object="${controllerForm}" method="post">
+
+	  	<div class="panel panel-default">
+			<div class="panel-heading"><span th:text="#{controller.title}">Configuring controller connection</span></div>
+			<div class="panel-body">
+				<div class="row">
+					<div class="col-md-6 form-group">
+						<label><span th:text="#{controller.url}">URL</span><span class="glyphicon glyphicon-asterisk"></span></label> 
+						<input type="text" th:field="*{url}" th:errorclass="fieldError" class="form-control" />
+						<p th:if="${#fields.hasErrors('url')}" th:errors="*{url}">Error</p>
+					</div>
+					<div class="col-md-2 form-group">
+						<label><span th:text="#{controller.account}">Account</span></label> 
+						<input type="text" th:field="*{account}" th:errorclass="fieldError" class="form-control" />
+						<p th:if="${#fields.hasErrors('account')}" th:errors="*{account}">Error</p>
+					</div>
+					<div class="col-md-2 form-group">
+						<label><span th:text="#{controller.username}">Username</span><span class="glyphicon glyphicon-asterisk"></span></label> 
+						<input type="text" th:field="*{username}" th:errorclass="fieldError" class="form-control" />
+						<p th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Error</p>
+					</div>
+					<div class="col-md-2 form-group">
+						<label><span th:text="#{controller.password}">Password</span><span class="glyphicon glyphicon-asterisk"></span></label> 
+						<input type="password" th:field="*{password}" th:errorclass="fieldError" class="form-control" />
+						<p th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Error</p>
+					</div>
+				</div>
+			</div>
+			<div class="panel-footer">
+				<input class="btn btn-primary" type="submit" th:value="#{controller.action.connection}" value="Save"/>
+				<img id="spinning" src="" th:src="@{/images/spinning.gif}" width="32px" height="32px" style="display:none;"/>
+			</div>
+		</div>
+		
+	</form>
+	</div>
+</body>
+</html>

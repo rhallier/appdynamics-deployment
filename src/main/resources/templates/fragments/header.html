@@ -1,20 +1,16 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css"
-          th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}"
-          rel="stylesheet" media="screen" />
-    <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/js/bootstrap.min.js"
-          th:href="@{/webjars/bootstrap/3.3.6/js/bootstrap.min.js}"
-          rel="stylesheet" media="screen" />
-    <script src="http://cdn.jsdelivr.net/webjars/jquery/2.2.1/jquery.min.js"
-            th:src="@{/webjars/jquery/2.2.1/jquery.min.js}"></script>
+	<meta charset="utf-8"></meta>
+	<meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet" media="screen" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js" th:src="@{/webjars/jquery/3.2.0/jquery.min.js}"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" th:href="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
 </head>
 <body>
 
 <!-- Navbar -->
-<div class="navbar navbar-inverse navbar-fixed-top" th:fragment="header">
+<div class="navbar navbar-inverse" th:fragment="header">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
@@ -22,12 +18,22 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Appdynamics</a>
+            <a class="navbar-brand" th:href="@{/}" href="/">Appdynamics</a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="#" th:href="@{/}">Deployment</a></li>
+            	<li>
+            		<a href="#" th:href="@{/controller}">Controller
+            		<img id="connection_success" src="" th:src="@{/images/success.png}" width="24px" height="24px" th:if="${@applicationsHolder.controllerSet}"/>
+					<img id="connection_failure" src="" th:src="@{/images/failure.png}" width="24px" height="24px" th:unless="${@applicationsHolder.controllerSet}"/>
+					</a>
+            	</li>
+            	<li><a href="#" th:href="@{/deploymentStatus}" th:text="#{menu.deploymentStatus}">Deployment Status</a></li>
             </ul>
+            <ul class="nav navbar-nav navbar-right">
+        		<li> 	
+        		</li>
+		    </ul>
         </div>
         <!--/.nav-collapse -->
     </div>

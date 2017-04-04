@@ -15,6 +15,7 @@ public class JacksonObjectMapper implements ObjectMapper {
 	public JacksonObjectMapper() {
 		jacksonObjectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
 		jacksonObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		jacksonObjectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
 	}
 
 	@SuppressWarnings("unchecked")

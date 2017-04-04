@@ -1,19 +1,13 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Appdynamics tools</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.6/css/bootstrap.min.css"
-          th:href="@{/webjars/bootstrap/3.3.6/css/bootstrap.min.css}"
-          rel="stylesheet" media="screen" />
-    <link href="../static/css/core.css"
-          th:href="@{/css/core.css}"
-          rel="stylesheet" media="screen" />
-    <script src="http://cdn.jsdelivr.net/webjars/jquery/2.2.1/jquery.min.js"
-            th:src="@{/webjars/jquery/2.2.1/jquery.min.js}"></script>
-            
-    <script>
+	<meta charset="utf-8"></meta>
+	<meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet" media="screen" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js" th:src="@{/webjars/jquery/3.2.0/jquery.min.js}"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" th:href="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+           
+    <script type="text/javascript">
     $( document ).ready(function() {
     	$( "#button_connect" ).click(function() {
     		test_connection();
@@ -22,7 +16,7 @@
 			$.ajax({
 				type: "POST",
 				contentType : "application/json",      	  
-				url: "testConnection",
+				url: "saveConnection",
 				data: str,
 				dataType : 'json',
 				timeout : 100000
@@ -85,11 +79,6 @@
 <body>
 <!-- Header -->
 <div th:replace="fragments/header :: header">
-    <!-- ============================================================================ -->
-    <!-- This content is only used for static prototyping purposes (natural templates)-->
-    <!-- and is therefore entirely optional, as this markup fragment will be included -->
-    <!-- from "fragments/header.html" at runtime.                                     -->
-    <!-- ============================================================================ -->
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
                 <a class="navbar-brand" href="#">Static header</a>
@@ -105,15 +94,13 @@
 </div>
 <div class="container">
     <div class="hero-unit">
-        <h1>Appdynamics Deployment Status</h1>
-        <p>Welcome to the Appdynamics Deployment Status Application!</p>
+        <p th:text="#{controller.conf}">Configuring Controller connection</p>
     </div>
     <!-- /* Handling the flash message */-->
 	<th:block th:if="${message != null}">
 		<div th:replace="fragments/message :: message (type=${#strings.toLowerCase(message.type)}, message=${message.message})"></div>
 	</th:block>
     <div>
-    	<form id="building-form" action="#" th:action="@{/buildGraph}" th:object="${controllerForm}" method="post">
     		<div class="panel panel-default">
 				<div class="panel-heading"><span th:text="#{controller.title}"></span></div>
 				<div class="panel-body">
@@ -149,57 +136,22 @@
 				</div>
 			</div>
 
-    		<div class="panel panel-default">
-				<div class="panel-heading" th:text="#{building.title}"></div>
-				<div class="panel-body">
-					<div class="row">
-						<div class="col-md-2 form-group">
-							<label><span th:text="#{building.timerange.minsBeforeNow}"></span></label> 
-							<input type="text" th:field="*{timerangeMinsBeforeNow}" th:errorclass="fieldError" class="form-control" />
-							<p th:text="'Minutes before now'"></p>
-							<p th:if="${#fields.hasErrors('timerangeMinsBeforeNow')}" th:errors="*{timerangeMinsBeforeNow}">Error</p>
-						</div>
-						<div class="col-md-3 form-group">
-							<label><span th:text="#{building.applicationFilter}"></span></label>
-							<input type="text" th:field="*{applicationFilter}" th:errorclass="fieldError" class="form-control" />
-							 <div class="checkbox">
-	    						<label>
-									<input type="checkbox" th:field="*{notFilter}"/> Not
-	    						</label>
-	  						</div>
-						</div>
-					</div>
-				</div>
-				<div class="panel-footer">
-					<input class="btn btn-primary" type="submit" th:value="#{building.action.build}"/>
-					<img id="spinning" src="" th:src="@{/images/spinning.gif}" width="32px" height="32px" style="display:none;"/>
-				</div>
-			</div>
 
-    	</form>
-    	
-        <h2>Reporting</h2>
-        <p><span th:text="|Initialized : ${@applicationsHolder.initialized}|"></span> | Applications <span class="badge" th:text="${@applicationsHolder.nbApplications}"></span>
-        </p>
+  <ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#deployementStatus" th:text="#{deploymentStatus.title}">Deployment</a></li>
+    <li><a data-toggle="tab" href="#hotspot" th:text="#{hotspot.title}">Hotspot</a></li>
+  </ul>
 
-	   	<form action="#" th:action="@{/reports}" method="post">
-	       <div class="panel panel-default" th:if="${@applicationsHolder.initialized}">
-				<div class="panel-heading"><span th:text="#{controller.title}"></span></div>
-					<div class="panel-body">
-						<div class="row">
-				    		<label><span th:text="#{report.name}"></span></label> 
-							<select name="report">
-								<option th:each="rn : ${reports}" th:value="${rn.name()}" th:text="${rn.label}">Report name</option>
-							</select>
-							<select name="format">
-								<option value="xlsx">Excel</option>
-								<option value="pdf">PDF</option>
-							</select>
-							<input class="btn btn-success btn-sm" type="submit" th:value="#{entity.action.report}"/>
-						</div>
-					</div>
-				</div>
-    	</form>
+  <div class="tab-content">
+    <div id="deploymentStatus" class="tab-pane fade in active">
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    </div>
+    <div id="hotspot" class="tab-pane fade">
+      <h3>Menu 1</h3>
+      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+    </div>
+  </div>
+
        
     </div>
     <footer>

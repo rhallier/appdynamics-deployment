@@ -13,6 +13,7 @@ import org.appdynamics.deployment.model.Excludes;
 import org.appdynamics.deployment.model.HealthRuleViolation;
 import org.appdynamics.deployment.model.MetricData;
 import org.appdynamics.deployment.model.Node;
+import org.appdynamics.deployment.model.RequestSegmentData;
 import org.appdynamics.deployment.model.Tier;
 import org.appdynamics.deployment.model.Timerange;
 import org.appdynamics.deployment.utils.StringUtils;
@@ -70,7 +71,6 @@ public class RestService {
 	}
 	
 	public Event[] getEventData(Controller controller, int applicationId, String[] eventTypes, String[] severities, Timerange timerange) throws UnirestException {
-		//curl --user user1@customer1:secret http://demo.appdynamics.com//controller/rest/applications/6/events\?time-range-type=BEFORE_NOW\&duration-in-mins=30\&event-types=%20APPLICATION_ERROR,DIAGNOSTIC_SESSION\&severities=INFO,WARN,ERROR
 		HttpResponse<Event[]> eRep = RestClient.of(controller)
 				.get("rest/applications/{appId}/events")
 				.routeParam("appId", String.valueOf(applicationId))
@@ -83,6 +83,23 @@ public class RestService {
 		return result;
 	}
 
+	/*
+	 * Snapshots
+	 */
+	public RequestSegmentData[] getSnapshots(Controller controller, int applicationId, boolean includeProperties, boolean includeExitCalls, Timerange timerange) throws UnirestException {
+		HttpResponse<RequestSegmentData[]> eRep = RestClient.of(controller)
+				.get("rest/applications/{appId}/request-snapshots")
+				.routeParam("appId", String.valueOf(applicationId))
+				.between(timerange)
+				.queryString("need-props", includeProperties)
+				.queryString("need-exit-calls", includeExitCalls)
+				.toJson()
+				.asObject(RequestSegmentData[].class);
+
+		RequestSegmentData[] result = eRep.getBody();
+		return result;
+	}
+	
 	/*
 	 * Transaction Detection
 	 */

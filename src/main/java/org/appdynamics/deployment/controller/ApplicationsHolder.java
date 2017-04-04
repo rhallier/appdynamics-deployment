@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 public class ApplicationsHolder {
 
 	private Controller controller;
-	private Timerange timerange;
 
+	private Timerange timerange;
 	private List<Application> applications = null;
 
 	public List<Application> getApplications() {
@@ -25,8 +25,10 @@ public class ApplicationsHolder {
 		return controller;
 	}
 
-	public void setController(Controller controller) {
+	public void resetWithController(Controller controller) {
 		this.controller = controller;
+		this.timerange=null;
+		this.applications=null;
 	}
 
 	public void setApplications(List<Application> applications) {
@@ -41,6 +43,10 @@ public class ApplicationsHolder {
 		this.timerange = timerange;
 	}
 
+	public boolean isControllerSet() {
+		return this.controller!=null;
+	}
+	
 	public boolean isInitialized() {
 		return applications != null;
 	}
