@@ -1,9 +1,12 @@
 package org.appdynamics.deployment.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.appdynamics.deployment.model.Application;
+import org.appdynamics.deployment.model.Audit;
 import org.appdynamics.deployment.model.AutoDiscoveryConfig;
 import org.appdynamics.deployment.model.BusinessTransaction;
 import org.appdynamics.deployment.model.Controller;
@@ -17,6 +20,9 @@ import org.appdynamics.deployment.model.RequestSegmentData;
 import org.appdynamics.deployment.model.Tier;
 import org.appdynamics.deployment.model.Timerange;
 import org.appdynamics.deployment.utils.StringUtils;
+import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -28,6 +34,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 public class RestService {
 
 	final Logger logger = LoggerFactory.getLogger(RestService.class);
+	final DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
 	public Application[] getApplications(Controller controller) throws UnirestException {
 		HttpResponse<Application[]> applicationsRep = RestClient.of(controller).get("rest/applications").toJson().asObject(Application[].class);
@@ -83,6 +90,40 @@ public class RestService {
 		return result;
 	}
 
+	/*
+	 * Audit
+	 */
+	public Audit[] getAudit(Controller controller, Date start, Date end) throws UnirestException {
+		List<Audit> result = new ArrayList<Audit>();
+		
+		if(start==null)
+			throw new IllegalArgumentException("Start date is mandatory");
+		
+		LocalDate _start = new LocalDate(start);
+		LocalDate _end = new LocalDate(end);
+		
+		if(_start.isAfter(_end))
+			throw new IllegalArgumentException("Start date must be less than End date");
+		
+		// TODO : Check 403 http response code : response.getStatusLine().getStatusCode()
+		
+		for(LocalDate current = _start; !current.isAfter(_end); current = current.plusDays(1) ) {
+			
+			HttpResponse<Audit[]> eRep = RestClient.of(controller)
+					.get("ControllerAuditHistory")
+					.queryString("startTime", current.toDateTimeAtStartOfDay().toString(dtf))
+					.queryString("endTime", current.toDateTimeAtStartOfDay().withTime(23, 59, 59, 999).toString(dtf))
+					.asObject(Audit[].class);
+
+			Audit[] resultDay = eRep.getBody();
+			
+			if(resultDay.length!=0)
+				result.addAll(Arrays.asList(resultDay));
+		}
+		
+		return result.toArray(new Audit[] {});
+	}
+	
 	/*
 	 * Snapshots
 	 */
@@ -148,7 +189,7 @@ public class RestService {
 		
 		MetricData[] data = mdRep.getBody();
 		
-		if(data!=null && data.length>0)
+		if(data!=null && data.length>0 && data[0].getMetricValues()!=null && !data[0].getMetricValues().isEmpty())
 			return data[0].getMetricValues().get(0).getSum()>0;
 		else
 			return false;

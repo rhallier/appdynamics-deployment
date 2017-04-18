@@ -2,6 +2,7 @@ package org.appdynamics.deployment.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class Application {
     private int id;
@@ -98,6 +99,17 @@ public class Application {
 				}
 					
 		return result;
+	}
+	
+	public Collection<Node> getNodes() {
+		List<Node> nodes = new ArrayList<Node>();
+		if(tiers!=null)
+			for(Tier tier : tiers)
+				if(tier.getNodes()!=null && !tier.getNodes().isEmpty()) {
+					nodes.addAll(tier.getNodes());
+				}
+		
+		return nodes;
 	}
 	
 	public Collection<HealthRuleViolation> getHealthRuleViolations() {

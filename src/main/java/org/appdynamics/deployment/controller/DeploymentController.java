@@ -1,5 +1,6 @@
 package org.appdynamics.deployment.controller;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -40,6 +41,11 @@ public class DeploymentController {
 	@ModelAttribute("reports")
 	public Report[] getReports() {
 		return Report.values();
+	}
+	
+	@ModelAttribute("reportFormats")
+	public ReportFormat[] getReportFormats() {
+		return ReportFormat.values();
 	}
 	
     @RequestMapping(path="/deploymentStatus", method=RequestMethod.GET)
@@ -87,7 +93,7 @@ public class DeploymentController {
 
     @Component
     @Scope(scopeName = "session")
-	public static class GraphForm {
+	public static class GraphForm implements Serializable {
 		private boolean notFilter;
 		private String applicationFilter;
 		@Min(1)

@@ -5,7 +5,8 @@ public enum Report {
 	APPLICATIONS("reportApplications","Application level"),
 	TIERS("reportTiers","Tier level"),
 	NODES("reportNodes","Node level"),
-	BUSINESS_TRANSACTIONS("reportBusinessTransactions","Business Transactions")
+	BUSINESS_TRANSACTIONS("reportBusinessTransactions","Business Transactions"),
+	LICENSES("reportLicenses","Licenses")
 	;
 	
 	private String filename;

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportLicenses" pageWidth="520" pageHeight="842" columnWidth="480" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="54714936-0d63-4ef2-8544-fa1df5aaf7bd">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.print.keep.full.text" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.white.page.background" value="false"/>
+	<property name="net.sf.jasperreports.export.xls.font.size.fix.enabled" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.wrap.text" value="false"/>
+	<style name="std" isDefault="true"/>
+	<style name="header" style="std" backcolor="#CCCCCC">
+		<box>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="title2" style="std" fontSize="12"/>
+	<style name="title1" style="std" fontSize="16"/>
+	<parameter name="controller" class="java.lang.String"/>
+	<parameter name="timerange" class="java.lang.String"/>
+	<field name="agentType" class="java.lang.String"/>
+	<field name="amount" class="java.lang.Integer"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement style="title2" x="0" y="59" width="152" height="20" uuid="7245f08e-cd1b-4229-8dd3-771054586303"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Timerange :]]></text>
+			</staticText>
+			<textField>
+				<reportElement style="title2" x="152" y="59" width="328" height="20" uuid="0c28063e-98b4-42d0-a50a-8df9d178b45e"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{timerange}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="title2" x="0" y="39" width="152" height="20" uuid="7bee5001-ff75-4d58-9832-5041e7f60b12"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Controller :]]></text>
+			</staticText>
+			<textField>
+				<reportElement style="title2" x="152" y="39" width="328" height="20" uuid="1dd6021f-bb27-4c0f-b8a1-c24004ac35a5"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{controller}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="title1" x="0" y="0" width="480" height="39" uuid="f346ec65-adf8-41e8-9404-e0a5c8565efd"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[License Consumption]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="38" splitType="Stretch">
+			<staticText>
+				<reportElement style="header" x="0" y="0" width="152" height="38" uuid="8a9f8280-c136-48bf-a5df-e1b62fed51b8"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Agent Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="header" x="152" y="0" width="56" height="38" uuid="addff4c8-fcae-4831-bef2-fbd8e9402fde"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Number]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement style="std" x="0" y="0" width="152" height="20" uuid="c88a0ff4-de26-4779-aadf-bbfd42850a3f"/>
+				<textFieldExpression><![CDATA[$F{agentType}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="std" x="152" y="0" width="56" height="20" uuid="efc75eed-bab4-4492-8913-a995a23456c9"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

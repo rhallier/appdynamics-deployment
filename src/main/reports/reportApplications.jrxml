@@ -3,8 +3,11 @@
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.print.keep.full.text" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.white.page.background" value="false"/>
+	<property name="net.sf.jasperreports.export.xls.font.size.fix.enabled" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.wrap.text" value="false"/>
 	<style name="std" isDefault="true"/>
 	<style name="header" style="std" backcolor="#CCCCCC">
 		<box>

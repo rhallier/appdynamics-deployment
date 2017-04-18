@@ -64,8 +64,7 @@
 							<option th:each="rn : ${reports}" th:value="${rn.name()}" th:text="${rn.label}">Report name</option>
 						</select>
 						<select name="format">
-							<option value="xlsx">Excel</option>
-							<option value="pdf">PDF</option>
+							<option th:each="rf : ${reportFormats}" th:value="${rf.name()}" th:text="${rf.label}">Report Format</option>
 						</select>
 						<input class="btn btn-success btn-sm" type="submit" th:value="#{deploymentStatus.report.action}" id="button-report"/>
 					</div>

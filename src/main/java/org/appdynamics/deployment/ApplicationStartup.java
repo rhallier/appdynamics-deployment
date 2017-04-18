@@ -1,6 +1,9 @@
 package org.appdynamics.deployment;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 
 import javax.annotation.PreDestroy;
 
@@ -16,7 +19,7 @@ public class ApplicationStartup implements ApplicationListener<ContextRefreshedE
         System.out.println("On Startup");
 		try {
 			RestClient.init();
-		} catch (IOException e) {
+		} catch (IOException | KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
 			e.printStackTrace(System.err);
 		}
     }

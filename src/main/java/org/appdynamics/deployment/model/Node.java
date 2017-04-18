@@ -100,6 +100,20 @@ public class Node {
 		this.active = active;
 	}
 
+	/**
+	 * 		
+	    NATIVE_WEB_SERVER			WEB SERVER
+		APP_AGENT					JAVA
+		DOT_NET_APP_AGENT			.NET
+		NODEJS_APP_AGENT			NODE.js
+		...
+
+	 * @return
+	 */
+	public boolean isJavaAgent() {
+		return AgentType.isJava(agentType);
+	}
+	
 	@Override
 	public String toString() {
 		return "_Node [id=" + id + ", name=" + name + ", type=" + type + ", machineId=" + machineId + ", machineName=" + machineName + ", machineOSType=" + machineOSType + ", machineAgentPresent=" + machineAgentPresent + ", machineAgentVersion=" + machineAgentVersion + ", appAgentPresent=" + appAgentPresent + ", appAgentVersion=" + appAgentVersion + ", ipAddresses=" + ipAddresses + ", tierId=" + tierId + ", tierName=" + tierName + ", agentType=" + agentType + ", nodeUniqueLocalId=" + nodeUniqueLocalId + ", active=" + active + "]";

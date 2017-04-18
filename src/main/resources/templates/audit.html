@@ -1,0 +1,48 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layouts/standard">
+<head>
+    <script type="text/javascript" th:inline="javascript">
+	    $( document ).ready(function() {
+	    	$('#button-build').prop( "disabled", /*[[${!@applicationsHolder.controllerSet}]]*/ true )
+	    	
+	    	$('#timerange-container .input-daterange').datepicker({
+	    		format: "mm/dd/yyyy",
+	    		todayHighlight: true
+	        });
+	    });
+    </script>
+</head>
+<body>
+	<div layout:fragment="content">
+
+	<form id="audit-form" action="#" th:action="@{/audit}" th:object="${auditForm}" method="post">
+		<div class="panel panel-default">
+			<div class="panel-heading" th:text="#{audit.filter.title}"></div>
+			<div class="panel-body">
+				<div class="row">
+					<div class="span4 col-md-4" id="timerange-container">
+						<label><span th:text="#{audit.filter.timerange}"></span></label>
+						<div class="input-daterange input-group" id="datepicker">
+							<input type="text" class="input form-control" name="start" />
+							<span class="input-group-addon">to</span>
+							<input type="text" class="input form-control" name="end" />
+						</div> 
+						<p th:if="${#fields.hasErrors('start')}" th:errors="*{start}">Error</p>
+						<p th:if="${#fields.hasErrors('end')}" th:errors="*{end}">Error</p>
+					</div>
+				</div>
+			</div>
+			<div class="panel-footer">
+				<label><span th:text="#{deploymentStatus.report.name}"></span></label> 
+				<select name="reportFormat">
+					<option th:each="rf : ${reportFormats}" th:value="${rf.name()}" th:text="${rf.label}">Report Format</option>
+				</select>
+				<p th:if="${#fields.hasErrors('reportFormat')}" th:errors="*{reportFormat}">Error</p>
+			
+				<input class="btn btn-primary" type="submit" th:value="#{audit.action.build}" id="button-build"/>
+			</div>
+		</div>
+	</form>
+
+</div>
+</body>
+</html>

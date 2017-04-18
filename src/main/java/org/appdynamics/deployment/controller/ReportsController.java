@@ -2,13 +2,14 @@ package org.appdynamics.deployment.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-
+import org.appdynamics.deployment.model.AgentType;
 import org.appdynamics.deployment.model.Application;
 import org.appdynamics.deployment.model.BusinessTransaction;
 import org.appdynamics.deployment.model.Node;
 import org.appdynamics.deployment.model.Tier;
+import org.appdynamics.deployment.utils.ReportBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -19,21 +20,19 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class ReportsController {
-	private static final String FILE_FORMAT = "format";
-	private static final String DATASOURCE = "datasource";
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
 	@RequestMapping(value = "/reports")
-	public ModelAndView getRptByParam(final ModelMap modelMap, ModelAndView modelAndView, @RequestParam("report") final Report report, @RequestParam(name=FILE_FORMAT, required=false) final String format) {
+	public ModelAndView getRptByParam(final ModelMap modelMap, ModelAndView modelAndView, @RequestParam("report") final Report report, @RequestParam(name="format", required=false) final ReportFormat format) {
 
 		ApplicationsHolder applicationsHolder = applicationContext.getBean(ApplicationsHolder.class);
 		List<Application> applications = applicationsHolder.getApplications();
-		JRBeanCollectionDataSource datasource = null;
+		List<?> output = null;
 
 		if(Report.APPLICATIONS==report) {
-			datasource = new JRBeanCollectionDataSource(applications, true);
+			output = applications;
 		}
 		else if (Report.TIERS==report) {
 			List<Tier> tiers = new ArrayList<Tier>();
@@ -42,7 +41,7 @@ public class ReportsController {
 					for(Tier tier : app.getTiers())
 						tiers.add(tier);
 			
-			 datasource = new JRBeanCollectionDataSource(tiers, true);
+			 output=tiers;
 		}
 		else if (Report.NODES==report) {
 			List<Node> nodes = new ArrayList<Node>();
@@ -55,7 +54,7 @@ public class ReportsController {
 					}
 						
 			
-			 datasource = new JRBeanCollectionDataSource(nodes, true);
+			 output = nodes;
 		}
 		else if (Report.BUSINESS_TRANSACTIONS==report) {
 			List<BusinessTransaction> bts = new ArrayList<BusinessTransaction>();
@@ -68,20 +67,43 @@ public class ReportsController {
 					}
 						
 			
-			 datasource = new JRBeanCollectionDataSource(bts, true);
+			 output = bts;
+		}
+		else if (Report.LICENSES==report) {
+			Map<String, Integer> licenses = applicationsHolder.getConsumedLicenses();
+			List<LicenseItem> lic = new ArrayList<LicenseItem>();
+			
+			for(Map.Entry<String, Integer> e : licenses.entrySet())
+				lic.add(new LicenseItem(e.getKey(), e.getValue()));
+			
+			output=lic;
 		}
 		
-		modelMap.put(DATASOURCE, datasource);
-		modelMap.put(FILE_FORMAT, format!=null ? format : "pdf");
+		return new ReportBuilder(report.getFilename(), modelMap)
+				.setDatasource(output)
+				.setFormat(format)
+				.addParameter("controller", applicationsHolder.getController().getUrl())
+				.addParameter("timerange", applicationsHolder.getTimerange().toString())
+				.toModelAndView();
+	}
+
+	public static class LicenseItem {
+		private String agentType;
+		private int amount;
 		
-		if (format==null || format.equals("pdf"))
-		    modelMap.put("IS_IGNORE_PAGINATION", false);
-		else
-		    modelMap.put("IS_IGNORE_PAGINATION", true);
 		
-		modelMap.put("controller", applicationsHolder.getController().getUrl());
-		modelMap.put("timerange", applicationsHolder.getTimerange().toString());
-		modelAndView = new ModelAndView(report.getFilename(), modelMap);
-		return modelAndView;
+		public LicenseItem(String agentType, int amount) {
+			super();
+			
+			this.agentType = AgentType.translate(agentType);
+			this.amount = amount;
+		}
+		
+		public String getAgentType() {
+			return agentType;
+		}
+		public int getAmount() {
+			return amount;
+		}
 	}
 }
