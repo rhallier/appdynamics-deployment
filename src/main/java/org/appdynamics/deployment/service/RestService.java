@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Service
 public class RestService {
@@ -36,25 +35,25 @@ public class RestService {
 	final Logger logger = LoggerFactory.getLogger(RestService.class);
 	final DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
-	public Application[] getApplications(Controller controller) throws UnirestException {
+	public Application[] getApplications(Controller controller) throws RestException {
 		HttpResponse<Application[]> applicationsRep = RestClient.of(controller).get("rest/applications").toJson().asObject(Application[].class);
 		Application[] apps = applicationsRep.getBody();
 		return apps;
 	}
 
-	public Tier[] getTiers(Controller controller, int applicationId) throws UnirestException {
+	public Tier[] getTiers(Controller controller, int applicationId) throws RestException {
 		HttpResponse<Tier[]> tiersRep = RestClient.of(controller).get("rest/applications/{appId}/tiers").routeParam("appId", String.valueOf(applicationId)).toJson().asObject(Tier[].class);
 		Tier[] tiers = tiersRep.getBody();
 		return tiers;
 	}
 	
-	public Node[] getNodes(Controller controller, int applicationId) throws UnirestException {
+	public Node[] getNodes(Controller controller, int applicationId) throws RestException {
 		HttpResponse<Node[]> nodesRep = RestClient.of(controller).get("rest/applications/{appId}/nodes").routeParam("appId", String.valueOf(applicationId)).toJson().asObject(Node[].class);
 		Node[] nodes = nodesRep.getBody();
 		return nodes;
 	}
 	
-	public BusinessTransaction[] getBusinessTransactions(Controller controller, int applicationId, Boolean exclude) throws UnirestException {
+	public BusinessTransaction[] getBusinessTransactions(Controller controller, int applicationId, Boolean exclude) throws RestException {
 		RestHttpRequest request = RestClient.of(controller).get("rest/applications/{appId}/business-transactions").routeParam("appId", String.valueOf(applicationId));
 		
 		if(exclude!=null)
@@ -66,7 +65,7 @@ public class RestService {
 		return bts;
 	}
 	
-	public HealthRuleViolation[] getHealthRuleViolations(Controller controller, int applicationId, Timerange timerange) throws UnirestException {
+	public HealthRuleViolation[] getHealthRuleViolations(Controller controller, int applicationId, Timerange timerange) throws RestException {
 		HttpResponse<HealthRuleViolation[]> hrRep = RestClient.of(controller)
 				.get("rest/applications/{appId}/problems/healthrule-violations")
 				.routeParam("appId", String.valueOf(applicationId))
@@ -77,7 +76,7 @@ public class RestService {
 		return hrs;
 	}
 	
-	public Event[] getEventData(Controller controller, int applicationId, String[] eventTypes, String[] severities, Timerange timerange) throws UnirestException {
+	public Event[] getEventData(Controller controller, int applicationId, String[] eventTypes, String[] severities, Timerange timerange) throws RestException {
 		HttpResponse<Event[]> eRep = RestClient.of(controller)
 				.get("rest/applications/{appId}/events")
 				.routeParam("appId", String.valueOf(applicationId))
@@ -93,7 +92,7 @@ public class RestService {
 	/*
 	 * Audit
 	 */
-	public Audit[] getAudit(Controller controller, Date start, Date end) throws UnirestException {
+	public Audit[] getAudit(Controller controller, Date start, Date end) throws RestException {
 		List<Audit> result = new ArrayList<Audit>();
 		
 		if(start==null)
@@ -127,7 +126,7 @@ public class RestService {
 	/*
 	 * Snapshots
 	 */
-	public RequestSegmentData[] getSnapshots(Controller controller, int applicationId, boolean includeProperties, boolean includeExitCalls, Timerange timerange) throws UnirestException {
+	public RequestSegmentData[] getSnapshots(Controller controller, int applicationId, boolean includeProperties, boolean includeExitCalls, Timerange timerange) throws RestException {
 		HttpResponse<RequestSegmentData[]> eRep = RestClient.of(controller)
 				.get("rest/applications/{appId}/request-snapshots")
 				.routeParam("appId", String.valueOf(applicationId))
@@ -144,7 +143,7 @@ public class RestService {
 	/*
 	 * Transaction Detection
 	 */
-	public AutoDiscoveryConfig getAutoDiscoveryConfig(Controller controller, int applicationId, String tierName) throws UnirestException {
+	public AutoDiscoveryConfig getAutoDiscoveryConfig(Controller controller, int applicationId, String tierName) throws RestException {
 		AutoDiscoveryConfig result=null;
 		
 		if(tierName==null)
@@ -155,7 +154,7 @@ public class RestService {
 		return result;
 	}
 
-	public CustomMatchPoints getCustomMatchPoints(Controller controller, int applicationId, String tierName) throws UnirestException {
+	public CustomMatchPoints getCustomMatchPoints(Controller controller, int applicationId, String tierName) throws RestException {
 		CustomMatchPoints result=null;
 		
 		if(tierName==null)
@@ -166,7 +165,7 @@ public class RestService {
 		return result;
 	}
 
-	public Excludes getExcludes(Controller controller, int applicationId, String tierName) throws UnirestException {
+	public Excludes getExcludes(Controller controller, int applicationId, String tierName) throws RestException {
 		Excludes result=null;
 		
 		if(tierName==null)
@@ -178,7 +177,7 @@ public class RestService {
 	}
 
 	
-	public boolean isActiveNode(Controller controller, long applicationId, String tierName, String nodeName, Timerange timerange) throws UnirestException {
+	public boolean isActiveNode(Controller controller, long applicationId, String tierName, String nodeName, Timerange timerange) throws RestException {
 		HttpResponse<MetricData[]> mdRep = RestClient.of(controller)
 			 .get("rest/applications/{appId}/metric-data")
 			.routeParam("appId", String.valueOf(applicationId))
@@ -195,7 +194,7 @@ public class RestService {
 			return false;
 	}
 	
-	public long getBTNbOfCalls(Controller controller, long applicationId, BusinessTransaction bt, Timerange timerange) throws UnirestException {
+	public long getBTNbOfCalls(Controller controller, long applicationId, BusinessTransaction bt, Timerange timerange) throws RestException {
 		HttpResponse<MetricData[]> mdRep = RestClient.of(controller)
 			 .get("rest/applications/{appId}/metric-data")
 			.routeParam("appId", String.valueOf(applicationId))
@@ -212,7 +211,7 @@ public class RestService {
 	}
 
 
-	public List<Application> buildGraph(Controller controller, ModelFilter filter, Timerange timerange) throws UnirestException {
+	public List<Application> buildGraph(Controller controller, ModelFilter filter, Timerange timerange) throws RestException {
 		
 		int nbapps=0;
 		List<Application> result = new ArrayList<Application>();

@@ -9,6 +9,7 @@ import javax.validation.constraints.Min;
 import org.appdynamics.deployment.model.Application;
 import org.appdynamics.deployment.model.Timerange;
 import org.appdynamics.deployment.service.ModelFilter;
+import org.appdynamics.deployment.service.RestException;
 import org.appdynamics.deployment.service.RestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,9 +82,9 @@ public class DeploymentController {
 				applicationsHolder.setApplications(applications);
 				
 				MessageHelper.addSuccess(model, messageSource.getMessage("deploymentStatus.build.success", null, null));
-			} catch (Exception e) {
+			} catch (RestException e) {
 				logger.error("Connection failed", e);
-				MessageHelper.addError(model, messageSource.getMessage("deploymentStatus.build.failure", null, null));
+				MessageHelper.addError(model, messageSource.getMessage("deploymentStatus.build.failure" + " " +e.getStatusLabel(), null, null));
 			}
 		}
 
@@ -94,9 +95,11 @@ public class DeploymentController {
     @Component
     @Scope(scopeName = "session")
 	public static class GraphForm implements Serializable {
+		private static final long serialVersionUID = 1L;
+
 		private boolean notFilter;
 		private String applicationFilter;
-		@Min(1)
+		@Min(5)
 		private int timerangeMinsBeforeNow;
 		
 		public String getApplicationFilter() {

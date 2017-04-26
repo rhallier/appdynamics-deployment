@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.appdynamics.deployment.model.Audit;
+import org.appdynamics.deployment.service.RestException;
 import org.appdynamics.deployment.service.RestService;
 import org.appdynamics.deployment.utils.ReportBuilder;
 import org.slf4j.Logger;
@@ -16,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
@@ -42,9 +42,6 @@ public class AuditController {
 	@Autowired
 	private ApplicationContext applicationContext;
 
-    @Autowired
-    private ConversionService conversionService;
-    
     @ModelAttribute("reportFormats")
 	public ReportFormat[] getReportFormats() {
 		return ReportFormat.values();
@@ -77,9 +74,9 @@ public class AuditController {
 						.addParameter("controller", applicationsHolder.getController().getUrl())
 						.addParameter("timerange", auditForm.getStart()+" to "+auditForm.getEndOrDefault())
 						.toModelAndView();
-			} catch (Exception e) {
+			} catch (RestException e) {
 				logger.error("Audit report generation failed", e);
-				MessageHelper.addError(model, messageSource.getMessage("audit.build.failure", null, null));
+				MessageHelper.addError(model, messageSource.getMessage("audit.build.failure", null, null)+ " " + e.getStatusLabel());
 			}
 		}
 
@@ -89,6 +86,8 @@ public class AuditController {
 	@Component
 	@Scope(scopeName = "session")
 	public static class AuditForm implements Serializable {
+		private static final long serialVersionUID = 1L;
+
 		@DateTimeFormat(pattern = "MM/dd/yyyy")
 		private Date start;
 		@DateTimeFormat(pattern = "MM/dd/yyyy")
