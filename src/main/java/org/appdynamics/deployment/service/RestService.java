@@ -69,7 +69,7 @@ public class RestService {
 		HttpResponse<HealthRuleViolation[]> hrRep = RestClient.of(controller)
 				.get("rest/applications/{appId}/problems/healthrule-violations")
 				.routeParam("appId", String.valueOf(applicationId))
-				.between(timerange)
+				.beforeNow(timerange) // Bug with .between(timerange)
 				.toJson()
 				.asObject(HealthRuleViolation[].class);
 		HealthRuleViolation[] hrs = hrRep.getBody();
@@ -182,7 +182,7 @@ public class RestService {
 			 .get("rest/applications/{appId}/metric-data")
 			.routeParam("appId", String.valueOf(applicationId))
 			.queryString("metric-path", "Application Infrastructure Performance|"+tierName+"|Individual Nodes|"+nodeName+"|Agent|App|Availability")
-			.between(timerange)
+			.beforeNow(timerange) 	// Fix with .between(timerange)
 			.toJson()
 			.asObject(MetricData[].class);
 		
@@ -199,7 +199,7 @@ public class RestService {
 			 .get("rest/applications/{appId}/metric-data")
 			.routeParam("appId", String.valueOf(applicationId))
 			.queryString("metric-path", "Business Transaction Performance|Business Transactions|"+bt.getTierName()+"|"+bt.getName()+"|Calls per Minute")
-			.between(timerange)
+			.beforeNow(timerange) 		//Bug with .between(timerange)
 			.toJson()
 			.asObject(MetricData[].class);
 		

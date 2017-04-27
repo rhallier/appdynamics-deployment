@@ -11,7 +11,15 @@ A simple tool to generate reports (Excel, PDF) about :
 2. java -jar deployment-VERSION.jar
 3. Open a web browser : http://localhost:8080
 
-If you want to change the port, eg 8082, run the following command : java -Dserver.port=8082 -jar deployment-VERSION.jar 
+Java system properties :
+
+| Property                     |      Comment          | Default |
+| ---------------------------- | --------------------- | ------- |
+| server.port                  | Web server port       | 8080    |
+| appdynamics.ignoreCookies    | Ignore cookies        | false   |
+| appdynamics.ignoreSSLCheck   | Bypass SSL checks     | false   |
+
+For instance, if you want to change the port, eg 8082, run the following command : java -Dserver.port=8082 -jar deployment-VERSION.jar 
 
 ##Contributing
 

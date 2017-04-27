@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.concurrent.Future;
 
 import org.appdynamics.deployment.model.Timerange;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -20,6 +22,8 @@ import com.mashape.unirest.request.body.Body;
 
 public class RestHttpRequest  {
 	
+	private final Logger logger = LoggerFactory.getLogger(RestHttpRequest.class);
+
 	public final static com.fasterxml.jackson.databind.ObjectMapper xmlMapper = new XmlObjectMapper();
 
 	public final static ObjectMapper jsonMapper = new JacksonObjectMapper();
@@ -64,6 +68,12 @@ public class RestHttpRequest  {
 		return this;
 	}
 	
+	public RestHttpRequest beforeNow(Timerange timerange) {
+		request.queryString("time-range-type","BEFORE_NOW")
+				.queryString("duration-in-mins", timerange.getDurationInMins());
+		return this;
+	}
+	
 	public RestHttpRequest basicAuth(String username, String password) {
 		request.basicAuth(username, password);
 		return this;
@@ -103,19 +113,23 @@ public class RestHttpRequest  {
 	public <T> T asXml(Class<T> clazz) throws RestException {
 		
 		HttpResponse<String> arep = null;
+		String body=null;
 		T result;
 		
 		try {
 			arep = RestClientHelper.request(request, String.class);
-			String a = arep.getBody();
+			body = arep.getBody();
 	
-			result = xmlMapper.readValue(a, clazz);
+			result = xmlMapper.readValue(body, clazz);
 			
 		} catch (JsonParseException e) {
+			logger.error("Http Status : "+arep.getStatus()+" "+arep.getStatusText()+", Body="+body);
 			throw new RestException(e, arep.getStatus(), arep.getStatusText());
 		} catch (JsonMappingException e) {
+			logger.error("Http Status : "+arep.getStatus()+" "+arep.getStatusText()+", Body="+body);
 			throw new RestException(e, arep.getStatus(), arep.getStatusText());
 		} catch (IOException e) {
+			logger.error("Http Status : "+arep.getStatus()+" "+arep.getStatusText()+", Body="+body);
 			throw new RestException(e, arep.getStatus(), arep.getStatusText());
 		}
 		

@@ -84,7 +84,7 @@ public class DeploymentController {
 				MessageHelper.addSuccess(model, messageSource.getMessage("deploymentStatus.build.success", null, null));
 			} catch (RestException e) {
 				logger.error("Connection failed", e);
-				MessageHelper.addError(model, messageSource.getMessage("deploymentStatus.build.failure" + " " +e.getStatusLabel(), null, null));
+				MessageHelper.addError(model, messageSource.getMessage("deploymentStatus.build.failure", null, null) + " " +e.getStatusLabel());
 			}
 		}
 

@@ -12,6 +12,7 @@ import javax.net.ssl.SSLSession;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContexts;
 import org.apache.http.ssl.TrustStrategy;
@@ -51,35 +52,53 @@ public class RestClient {
 	}
 	
 	public static void init() throws IOException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+		boolean ignoreCookies = Boolean.parseBoolean(System.getProperty("appdynamics.ignoreCookies", "false"));
+		boolean ignoreSSLCheck = Boolean.parseBoolean(System.getProperty("appdynamics.ignoreSSLCheck", "false"));
+		
+		HttpClientBuilder httpClientBuilder = HttpClients.custom();
+		
 		// Set JSON Object Mapper
 		Unirest.setObjectMapper(RestHttpRequest.jsonMapper);
 		
-		// Disable Invalid cookie header
-		RequestConfig globalConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.IGNORE_COOKIES).build();
+		// Http Request Config
+		if(ignoreCookies) {
+			
+			RequestConfig.Builder globalConfig = RequestConfig.custom();
+			
+			// Disable Invalid cookie header
+			globalConfig = globalConfig.setCookieSpec(CookieSpecs.IGNORE_COOKIES);
+			
+			httpClientBuilder = httpClientBuilder.setDefaultRequestConfig(globalConfig.build());
+		}
 				        
-		// Disable SSL Checks
-        SSLContext sslContext = SSLContexts
-                .custom()
-                .loadTrustMaterial(new TrustStrategy() {
-					@Override
-					public boolean isTrusted(java.security.cert.X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
-						return true;
-					}
-                })
-                .build();
-        
-		HostnameVerifier hostnameVerifier = new HostnameVerifier() {
-			@Override
-			public boolean verify(String hostname, SSLSession session) {
-				return true;
-			}
-		};
-		
-		org.apache.http.conn.ssl.SSLConnectionSocketFactory sslConFactory = new org.apache.http.conn.ssl.SSLConnectionSocketFactory(sslContext, hostnameVerifier);
+		// SSL Socket Factory
+		if(ignoreSSLCheck) {
+			
+			// Disable SSL Checks
+	        SSLContext sslContext = SSLContexts
+	                .custom()
+	                .loadTrustMaterial(new TrustStrategy() {
+						@Override
+						public boolean isTrusted(java.security.cert.X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
+							return true;
+						}
+	                })
+	                .build();
+	        
+			HostnameVerifier hostnameVerifier = new HostnameVerifier() {
+				@Override
+				public boolean verify(String hostname, SSLSession session) {
+					return true;
+				}
+			};
+			
+			org.apache.http.conn.ssl.SSLConnectionSocketFactory sslConFactory = new org.apache.http.conn.ssl.SSLConnectionSocketFactory(sslContext, hostnameVerifier);
 
-		// Update HTTP Client configuration
-		HttpClient httpclient = HttpClients.custom().setDefaultRequestConfig(globalConfig).setSSLSocketFactory(sslConFactory).build();
-		Unirest.setHttpClient(httpclient);
+			httpClientBuilder = httpClientBuilder.setSSLSocketFactory(sslConFactory);
+		}
+		
+		// Set HTTP Client
+		Unirest.setHttpClient(httpClientBuilder.build());
 	}
 
 	public static void shutdown() throws IOException {

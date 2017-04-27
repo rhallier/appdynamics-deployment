@@ -10,6 +10,8 @@ public class Timerange {
 	private DateTime start;
 	private DateTime end;
 
+	private int durationInMins;
+	
 	public static Timerange beforeNow(int mins) {
 		DateTime _end = DateTime.now();
 		DateTime _start = _end.minusMinutes(mins);
@@ -18,6 +20,7 @@ public class Timerange {
 
 		result.start = _start;
 		result.end = _end;
+		result.durationInMins = mins;
 
 		return result;
 	}
@@ -38,6 +41,10 @@ public class Timerange {
 		return end.toDate().getTime();
 	}
 
+	public int getDurationInMins() {
+		return durationInMins;
+	}
+	
 	@Override
 	public String toString() {
 		return fmt.print(start) + " - "+ fmt.print(end);
